@@ -1,4 +1,5 @@
 https://staff.itee.uq.edu.au/marius/NIDS_datasets/
+download 2gb zip: https://www.kaggle.com/datasets/aryashah2k/nfuqnidsv2-network-intrusion-detection-dataset?resource=download
 
 The NF-UQ-NIDS-v2 dataset has a total of 75,987,976 records, out of which 
 25,165,295 (33.12%) are benign flows and 50,822,681 (66.88%) are attacks. 
