@@ -1,0 +1,21 @@
+Benign
+DDoS
+Reconnaissance
+injection
+DoS
+Brute Force
+password
+xss
+Infilteration
+Exploits
+scanning
+Fuzzers
+Backdoor
+Bot
+Generic
+Analysis
+Theft
+Shellcode
+mitm
+Worms
+ransomware
