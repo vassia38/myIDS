@@ -1,28 +1,25 @@
 https://staff.itee.uq.edu.au/marius/NIDS_datasets/
 download 2gb zip: https://www.kaggle.com/datasets/aryashah2k/nfuqnidsv2-network-intrusion-detection-dataset?resource=download
 
-The NF-UQ-NIDS-v2 dataset has a total of 75,987,976 records, out of which 
-25,165,295 (33.12%) are benign flows and 50,822,681 (66.88%) are attacks. 
-
-Class 		Count
-Benign 		25165295
-DDoS 		21748351
+Class 		    Count
+Benign 		    25165295
+DDoS 		    21748351
 Reconnaissance 	2633778
-Injection 	684897
-DoS 		17875585
+Injection 	    684897
+DoS 		    17875585
 Brute Force 	123982
-Password 	1153323
-XSS 		2455020
+Password 	    1153323
+XSS 		    2455020
 Infilteration 	116361
-Exploits 	31551
-Scanning 	3781419
-Fuzzers 	22310
-Backdoor 	18978
-Bot 		143097
-Generic 	16560
-Analysis 	2299
-Theft 		2431
-Shellcode 	1427
-MITM 		7723
-Worms 		164
-Ransomware 	3425
+Exploits 	    31551
+Scanning 	    3781419
+Fuzzers 	    22310
+Backdoor 	    18978
+Bot 		    143097
+Generic 	    16560
+Analysis 	    2299
+Theft 		    2431
+Shellcode 	    1427
+MITM 		    7723
+Worms 		    164
+Ransomware 	    3425
