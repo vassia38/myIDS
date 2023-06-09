@@ -1,0 +1,7 @@
+{
+'fit_time': [565.4847939 , 568.01027155, 577.32017636, 559.82580042, 570.90763187],
+'score_time': [19.90860009, 20.07050753, 20.11044383, 20.28131986, 20.0707624],
+'estimator': [RandomForestClassifier(), RandomForestClassifier(), RandomForestClassifier(), RandomForestClassifier(), RandomForestClassifier()],
+'test_score': [0.98788867, 0.98793117, 0.98800491, 0.98801991, 0.98778991],
+'train_score': [0.99557028, 0.99557591, 0.99555122, 0.99557684, 0.99559903]
+}
