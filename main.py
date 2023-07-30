@@ -14,6 +14,7 @@ import scikitplot as skplot
 import matplotlib.pyplot as plt
 import pandas as pd
 
+
 def evaluateModel(X, y, model, scaler=skpre.StandardScaler(with_mean=False, with_std=False)):
     k = 5
     kf = skms.KFold(n_splits=k, random_state=None)
@@ -105,15 +106,23 @@ models_scalers = [
      scalers["normalized"]],
 ]   
 
-fig = plt.figure(figsize=(15,6))
+fig_learning = plt.figure(figsize=(15,12))
+fig_importance = plt.figure(figsize=(15,12))
 index = 1
 for [m,s] in models_scalers:
     print("\nevaluating {} model with {}".format(m, s))
     estim = make_pipeline(s, m)
-    axi = fig.add_subplot(2,2,index)
+    ax_learning = fig_learning.add_subplot(2,2,index)
     skplot.estimators.plot_learning_curve(estim, X,y, cv=5, scoring="accuracy", shuffle=True, 
-                                          n_jobs=-1, figsize=(6,4), title_fontsize="large", 
-                                          text_fontsize="large", title="{} {}".format(m,s), ax=axi)
+                                          n_jobs=-1, figsize=(6,4), title="{} {}".format(m,s), ax=ax_learning)
+    try:
+        ax_importance = fig_importance.add_subplot(2,2,index)
+        skplot.estimators.plot_feature_importances(estim, feature_names=X.columns,
+                                         title="{} with {} Feature Importance".format(m,s),
+                                         x_tick_rotation=90, order="ascending",
+                                         ax=ax_importance)
+    except:
+        pass
     index += 1
-    
+plt.tight_layout()
 plt.show()

@@ -13,7 +13,7 @@ from imblearn.over_sampling import SMOTE
 
 
 def prepare_data(benign_size=10000, benign_skip_n=0, malicious_size=2500, malicious_skip_n=0):
-    df = utils.load_data("NF-UQ-NIDS-v2_benign.csv", "NF-UQ-NIDS-v2_malicious.csv",
+    df = utils.load_data(r"data\NF-UQ-NIDS-v2_Benign.csv", r"data\malicious",
                          benign_size, benign_skip_n,
                          malicious_size, malicious_skip_n)
     # print("input sparsity ratio:{:.3f}".format(utils.get_sparsity_ratio(df)))
@@ -46,8 +46,8 @@ def get_best_model_from_cross_val(benign_size=10000, benign_skip_n=0,
     
     return result['estimator'][best_estim_index]
 
-def evaluate_model(model, benign_size=10000, benign_skip_n=0, 
-                   malicious_size=2500, malicious_skip_n=0):
+def evaluate_model(model, benign_size=40, benign_skip_n=0, 
+                   malicious_size=60, malicious_skip_n=0):
     X_test, X_feature_names, y_test, y_labels_map = prepare_data(benign_size, benign_skip_n,
                                                                 malicious_size, malicious_skip_n)
     
@@ -58,10 +58,10 @@ def evaluate_model(model, benign_size=10000, benign_skip_n=0,
     show_feature_importance(rfc, X_feature_names)
     show_confusion_matrix(y_test, y_predicted, y_labels_map.keys())
 
-benign_train_size = 2000000
-malicious_train_size = 2000000
+benign_train_size = 2000
+malicious_train_size = 100
 # rfc = get_best_model_from_cross_val(benign_train_size, 0, malicious_train_size, 0)
 # utils.save_model(rfc)
 
 rfc = utils.load_model()
-evaluate_model(rfc, 1000, benign_train_size, 100000, malicious_train_size)
+evaluate_model(rfc, 40, benign_train_size, 60, malicious_train_size)
