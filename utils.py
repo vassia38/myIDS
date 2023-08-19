@@ -3,19 +3,7 @@ import numpy as np
 from matplotlib import pyplot
 import os, joblib
 from sklearn.ensemble import RandomForestClassifier
-
-DATASET_NAME = "NF-UQ-NIDS-v2"
-LABELS = []
-for line in open('labels.txt', 'r').readlines():
-    LABELS.append(line.strip())
-
-
-def print_feature_distribution(df: pd.DataFrame):
-    for col in df.columns:
-        # counts, bins = np.histogram(df[col].values)
-        pyplot.hist(df[col].values, label=str(df[col].name))
-        pyplot.show()
-
+from config import *
 
 def split_and_export_dataset_0and1(filepath: str, chunk_size = 1):
     new_file_path = filepath.split(".csv")[0]
@@ -62,7 +50,8 @@ def get_sparsity_ratio(X: pd.DataFrame):
 
 def load_data(benigndata_file: str, maliciousdata_folder: str,
               benign_nrows=10000, benign_skip_n=0,
-              malicious_nrows=1000, malicious_skip_n=0) -> pd.DataFrame:
+              malicious_nrows=1000, malicious_skip_n=0,
+              binary_classif=False) -> pd.DataFrame:
     
     df_b = pd.read_csv(benigndata_file, nrows=benign_nrows, skiprows=range(1, benign_skip_n))
     df = pd.concat([df_b,], ignore_index=True)
@@ -74,7 +63,17 @@ def load_data(benigndata_file: str, maliciousdata_folder: str,
             df = pd.concat([df, df_m], ignore_index=True)
     
     df = df.sample(frac=1).reset_index(drop=True)
-    df.drop(inplace=True, columns=["IPV4_SRC_ADDR", "L4_SRC_PORT", "IPV4_DST_ADDR", "Dataset", "Label"])
+    if binary_classif:
+        # drop only the following columns:
+        # df.drop(inplace=True, columns=["IPV4_SRC_ADDR", "L4_SRC_PORT", "IPV4_DST_ADDR", "Dataset", "Attack"])
+        # keep only the following columns:
+        df = df[["L4_SRC_PORT", "L4_DST_PORT", "PROTOCOL", "IN_BYTES", "IN_PKTS", "OUT_BYTES", "OUT_PKTS", "TCP_FLAGS", "FLOW_DURATION_MILLISECONDS", "Label"]]
+    else:
+        # drop only the following columns:
+        # df.drop(inplace=True, columns=["IPV4_SRC_ADDR", "L4_SRC_PORT", "IPV4_DST_ADDR", "Dataset", "Label"])
+        # keep only the following columns:
+        df = df[["L4_SRC_PORT", "L4_DST_PORT", "PROTOCOL", "IN_BYTES", "IN_PKTS", "OUT_BYTES", "OUT_PKTS", "TCP_FLAGS", "FLOW_DURATION_MILLISECONDS", "Attack"]]
+    
     return clean_data(df)
 
 
@@ -93,6 +92,9 @@ def encode_labels(arr: np.array):
         labels_mapping[LABELS[i]] = i
     
     encoded_labels = [labels_mapping[label] for label in arr]
+    labels_mapping = {}
+    for i in range(len(LABELS)):
+        labels_mapping[i] = LABELS[i]
     return encoded_labels, labels_mapping
 
 
