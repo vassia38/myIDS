@@ -1,0 +1,23 @@
+{
+    "Benign":           10000,
+    "DDoS":             1000,
+    "Reconnaissance":   1000,
+    "injection":        1000,
+    "DoS":              1000,
+    "Brute Force":      1000,
+    "password":         1000,
+    "xss":              1000,
+    "Infilteration":    10000,
+    "Exploits":         1000,
+    "scanning":         1000,
+    "Fuzzers":          1000,
+    "Backdoor":         1000,
+    "Bot":              1000,
+    "Generic":          1000,
+    "Analysis":         1000,
+    "Theft":            1000,
+    "Shellcode":        1000,
+    "mitm":             1000,
+    "Worms":            100,
+    "ransomware":       1000
+}
