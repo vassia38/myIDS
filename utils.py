@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-from matplotlib import pyplot
 import os, joblib
 from sklearn.ensemble import RandomForestClassifier
 from config import *
@@ -59,7 +58,15 @@ def load_data(benigndata_file: str, maliciousdata_folder: str,
     for basename in os.listdir(maliciousdata_folder):
         if basename.endswith('.csv'):
             pathname = os.path.join(maliciousdata_folder, basename)
-            df_m = pd.read_csv(pathname, nrows=malicious_nrows, skiprows=range(1, malicious_skip_n))
+            
+            if basename.lower().find("worms") != -1:
+                if malicious_skip_n == 0:
+                    df_m = pd.read_csv(pathname, nrows=100, skiprows=range(1, 0))
+                else:
+                    df_m = pd.read_csv(pathname, nrows=64, skiprows=range(1, 100))
+            else:
+                df_m = pd.read_csv(pathname, nrows=malicious_nrows, skiprows=range(1, malicious_skip_n))
+            
             df = pd.concat([df, df_m], ignore_index=True)
     
     df = df.sample(frac=1).reset_index(drop=True)
@@ -96,6 +103,20 @@ def encode_labels(arr: np.array):
     for i in range(len(LABELS)):
         labels_mapping[i] = LABELS[i]
     return encoded_labels, labels_mapping
+
+
+def make_flags_byte_from_string(s: str) -> int:
+    n = 0
+    fl = 0
+    for i in range(len(s), 0, -1):
+        if s[i-1] != '.':
+            fl += pow(2,n)
+        n += 1
+    return fl
+
+
+def from_seconds_to_millis(ts: float) -> int:
+    return int(ts * 1000)
 
 
 def load_model(filename="RF_classifier.sav") -> RandomForestClassifier:

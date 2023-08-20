@@ -6,6 +6,7 @@ import pandas as pd
 import utils
 from plotting import *
 import numpy as np
+from config import *
 
 
 def prepare_data(benign_size=10000, benign_skip_n=0, malicious_size=2500, malicious_skip_n=0, binary_classif=False):
@@ -13,7 +14,7 @@ def prepare_data(benign_size=10000, benign_skip_n=0, malicious_size=2500, malici
                          benign_size, benign_skip_n,
                          malicious_size, malicious_skip_n,
                          binary_classif)
-    # print("input sparsity ratio:{:.3f}".format(utils.get_sparsity_ratio(df)))
+    
     class_column_name = 'Attack'
     if binary_classif:
         class_column_name = 'Label'
@@ -37,16 +38,24 @@ def prepare_data(benign_size=10000, benign_skip_n=0, malicious_size=2500, malici
 
 
 def get_best_model_from_cross_val(benign_size=10000, benign_skip_n=0, 
-                                  malicious_size=2500, malicious_skip_n=0,
+                                  malicious_size=1000, malicious_skip_n=0,
                                   binary_classif=False, resample=False):
-    X, X_feature_names, y, y_label_map = prepare_data(benign_size, benign_skip_n,
-                                                      malicious_size, malicious_skip_n,
-                                                      binary_classif)
+    X, feature_names, y, label_map = prepare_data(benign_size, benign_skip_n,
+                                                  malicious_size, malicious_skip_n,
+                                                  binary_classif)
     if resample:
-        X,y = SMOTE().fit_resample(X,y)
+        samp_str = 'auto'
+        if not binary_classif:
+            samp_str = {}
+            for key in label_map.keys():
+                samp_str[key] = malicious_size
+                if label_map[key] == 'Benign':
+                    samp_str[key] = benign_size
+            
+        X,y = SMOTE(sampling_strategy=samp_str, n_jobs=-1).fit_resample(X,y)
         print(pd.DataFrame(y).value_counts())
 
-    rfc = RandomForestClassifier()
+    rfc = RandomForestClassifier(n_jobs=-1)
     result = cross_validate(rfc, X, y, cv=5, return_estimator=True, return_train_score=True)
     print(result)
     
@@ -78,24 +87,24 @@ def make_binary_rfc():
     benign_train_size = 20000
     malicious_train_size = 2500
     binary = True
-    resample = False
+    resample = malicious_train_size / benign_train_size
+
     rfc = get_best_model_from_cross_val(benign_train_size, 0, malicious_train_size, 0, binary, resample)
     utils.save_model(rfc, "RF_SMOTE_bin.sav")
     evaluate_model(rfc, 50, benign_train_size, 50, malicious_train_size, binary)
 
 
 def make_multic_rfc():
-    benign_train_size = 0
-    malicious_train_size = 2500
-    binary = False
+    benign_train_size = 10000
+    malicious_train_size = 1000
     resample = True
-    rfc = get_best_model_from_cross_val(benign_train_size, 0, malicious_train_size, 0, binary, resample)
+    rfc = get_best_model_from_cross_val(benign_train_size, 0, malicious_train_size, 0, False, resample)
     utils.save_model(rfc, "RF_SMOTE_multi.sav")
-    evaluate_model(rfc, 0, 0, 1000, 0, binary)
+    evaluate_model(rfc, 10000, benign_train_size, 1000, malicious_train_size, False)
 
-# make_binary_rfc()
-# make_multic_rfc()
+#make_binary_rfc()
+make_multic_rfc()
 
-rfc_bin = utils.load_model("RF_SMOTE_bin.sav")
-rfc_multi = utils.load_model("RF_SMOTE_multi.sav")
-X_test, y_pred, y_label_map = evaluate_model(rfc_bin, 100, 0, 10, 0, binary_classif=True)
+# rfc_bin = utils.load_model("RF_SMOTE_bin.sav")
+# rfc_multi = utils.load_model("RF_SMOTE_multi.sav")
+# X_test, y_pred, y_label_map = evaluate_model(rfc_multi, 10000, 0, 1000, 0, binary_classif=False)
