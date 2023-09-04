@@ -1,0 +1,1 @@
+nfdump -r /var/log/2023/08/18/nfcapd.202308181755 -N -B -o 'fmt:%sa,%sp,%da,%dp,%pr,%ibyt,%ipkt,%obyt,%opkt,%flg,%td,%bpp,%pps,%fl'

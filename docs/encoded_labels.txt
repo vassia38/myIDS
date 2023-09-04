@@ -1,0 +1,26 @@
+0: 'Benign'
+1: 'DDoS'
+2: 'Reconnaissance'
+3: 'injection'
+4: 'DoS'
+5: 'Brute Force'
+6: 'password'
+7: 'xss'
+8: 'Infilteration'
+9: 'Exploits'
+10: 'scanning'
+11: 'Fuzzers'
+12: 'Backdoor'
+13: 'Bot'
+14: 'Generic'
+15: 'Analysis'
+16: 'Theft'
+17: 'Shellcode'
+18: 'mitm'
+19: 'Worms'
+20: 'ransomware'
+
+
+
+
+

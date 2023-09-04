@@ -1,0 +1,29 @@
+evaluating LogisticRegression(max_iter=600, n_jobs=-1, penalty='l1', solver='saga') with MinMaxScaler()
+ACC: 66.419 
+TPR: 92.523
+FPR: 83.422
+elapsed time: 0.977s
+
+evaluating BernoulliNB() with StandardScaler()
+ACC: 70.707
+TPR: 83.689
+FPR: 54.079
+elapsed time: 0.122s
+
+evaluating DecisionTreeClassifier() with StandardScaler(with_mean=False, with_std=False)
+ACC: 92.677
+TPR: 94.701
+FPR: 11.193
+elapsed time: 0.475s
+
+evaluating RandomForestClassifier(n_jobs=-1) with StandardScaler(with_mean=False, with_std=False)
+ACC: 94.182
+TPR: 94.732
+FPR: 06.869
+elapsed time: 3.373s
+
+evaluating SVC() with MinMaxScaler()
+ACC: 79.532
+TPR: 87.915
+FPR: 36.488
+elapsed time: 119.454s
