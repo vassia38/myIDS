@@ -2,6 +2,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC
 from sklearn.naive_bayes import BernoulliNB
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 
@@ -80,7 +81,7 @@ def evaluate_models(models_scalers, X, y):
 
     plt.show()
 
-df = utils.load_data("NF-UQ-NIDS-v2_benign.csv", "NF-UQ-NIDS-v2_malicious.csv", 10000, 2500)
+df = utils.load_data(r"data\NF-UQ-NIDS-v2_Benign.csv", r"data\malicious", 10000, 0, 1000, 0, True)
 # print("input sparsity ratio:{:.3f}".format(utils.get_sparsity_ratio(df)))
 
 X = df.iloc[:,:-1]
@@ -93,7 +94,7 @@ scalers = {
 }
 
 models_scalers = [
-    [LogisticRegression(solver="saga", penalty='l1', max_iter=600),
+    [LogisticRegression(solver="saga", penalty='l1', max_iter=600, n_jobs=-1),
      scalers["normalized"]],
     
     [BernoulliNB(),
@@ -101,7 +102,10 @@ models_scalers = [
     
     [DecisionTreeClassifier(),
      scalers["raw"]],
-    
+
+    [RandomForestClassifier(n_jobs=-1),
+     scalers["raw"]],
+
     [SVC(),
      scalers["normalized"]],
 ]   
@@ -112,11 +116,11 @@ index = 1
 for [m,s] in models_scalers:
     print("\nevaluating {} model with {}".format(m, s))
     estim = make_pipeline(s, m)
-    ax_learning = fig_learning.add_subplot(2,2,index)
+    ax_learning = fig_learning.add_subplot(3,3,index)
     skplot.estimators.plot_learning_curve(estim, X,y, cv=5, scoring="accuracy", shuffle=True, 
                                           n_jobs=-1, figsize=(6,4), title="{} {}".format(m,s), ax=ax_learning)
     try:
-        ax_importance = fig_importance.add_subplot(2,2,index)
+        ax_importance = fig_importance.add_subplot(3,3,index)
         skplot.estimators.plot_feature_importances(estim, feature_names=X.columns,
                                          title="{} with {} Feature Importance".format(m,s),
                                          x_tick_rotation=90, order="ascending",
