@@ -5,15 +5,71 @@ from sklearn.naive_bayes import BernoulliNB
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
+from sklearn.model_selection import learning_curve
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
 import utils
 import sklearn.model_selection as skms
 import sklearn.metrics as skmetric
 import sklearn.preprocessing as skpre
 from sklearn.pipeline import make_pipeline
-import scikitplot as skplot
 import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
+
+
+def plot_learning_curve(estimator, X, y, cv=5, scoring='accuracy', shuffle=True, n_jobs=None, figsize=(6,4), title=None, ax=None):
+    train_sizes, train_scores, test_scores = learning_curve(
+        estimator, X, y, cv=cv, scoring=scoring, shuffle=shuffle, n_jobs=n_jobs,
+        train_sizes=np.linspace(0.1, 1.0, 5)
+    )
+    train_scores_mean = np.mean(train_scores, axis=1)
+    test_scores_mean = np.mean(test_scores, axis=1)
+
+    if ax is None:
+        fig, ax = plt.subplots(figsize=figsize)
+    ax.plot(train_sizes, train_scores_mean, 'o-', color='tab:blue', label='Training score')
+    ax.plot(train_sizes, test_scores_mean, 'o-', color='tab:orange', label='Cross-validation score')
+    ax.set_title(title or 'Learning Curve')
+    ax.set_xlabel('Training Examples')
+    ax.set_ylabel(scoring)
+    ax.legend(loc='best')
+    ax.grid(True)
+    return ax
+
+
+def plot_feature_importance(estimator, feature_names=None, title=None, x_tick_rotation=90, order='ascending', ax=None):
+    if hasattr(estimator, 'named_steps'):
+        estimator = list(estimator.named_steps.values())[-1]
+
+    if hasattr(estimator, 'feature_importances_'):
+        importances = estimator.feature_importances_
+    elif hasattr(estimator, 'coef_'):
+        coef = estimator.coef_
+        if coef.ndim > 1:
+            importances = np.mean(np.abs(coef), axis=0)
+        else:
+            importances = np.abs(coef)
+    else:
+        raise AttributeError('Estimator does not expose feature importances or coefficients.')
+
+    if feature_names is None:
+        feature_names = [f'feature_{i}' for i in range(len(importances))]
+    feature_names = np.array(feature_names)
+
+    indices = np.argsort(importances)
+    if order == 'descending':
+        indices = indices[::-1]
+
+    if ax is None:
+        fig, ax = plt.subplots(figsize=(6, 4))
+
+    ax.barh(feature_names[indices], importances[indices])
+    ax.set_title(title or 'Feature Importance')
+    ax.set_xlabel('Importance')
+    plt.setp(ax.get_yticklabels(), rotation=x_tick_rotation)
+    plt.tight_layout()
+    return ax
 
 
 def evaluateModel(X, y, model, scaler=skpre.StandardScaler(with_mean=False, with_std=False)):
@@ -117,15 +173,15 @@ for [m,s] in models_scalers:
     print("\nevaluating {} model with {}".format(m, s))
     estim = make_pipeline(s, m)
     ax_learning = fig_learning.add_subplot(3,3,index)
-    skplot.estimators.plot_learning_curve(estim, X,y, cv=5, scoring="accuracy", shuffle=True, 
-                                          n_jobs=-1, figsize=(6,4), title="{} {}".format(m,s), ax=ax_learning)
+    plot_learning_curve(estim, X, y, cv=5, scoring="accuracy", shuffle=True, 
+                        n_jobs=-1, figsize=(6,4), title="{} {}".format(m,s), ax=ax_learning)
     try:
         ax_importance = fig_importance.add_subplot(3,3,index)
-        skplot.estimators.plot_feature_importances(estim, feature_names=X.columns,
-                                         title="{} with {} Feature Importance".format(m,s),
-                                         x_tick_rotation=90, order="ascending",
-                                         ax=ax_importance)
-    except:
+        plot_feature_importance(estim, feature_names=X.columns,
+                                 title="{} with {} Feature Importance".format(m,s),
+                                 x_tick_rotation=90, order="ascending",
+                                 ax=ax_importance)
+    except Exception:
         pass
     index += 1
 plt.tight_layout()
