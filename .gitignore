@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# folders
+ANEXE/
+dependencies/
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Data and models
+*.sav
+*.csv
+out.csv
+asdf.csv
+
+# IDE / editor files
+.vscode/
+*.swp
+*.swo
+*.idea/
+
+# Distribution / build
+dist/
+build/
+*.egg-info/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# archives
+*.7z
+*.zip
+*.rar
