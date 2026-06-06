@@ -10,6 +10,26 @@ from paramiko import SSHClient
 
 SRC_DIR = Path(__file__).resolve().parent
 REPO_ROOT = SRC_DIR.parent
+SECRETS_FILE = REPO_ROOT / 'secrets.txt'
+
+
+def read_secrets(secrets_file: Path = SECRETS_FILE) -> dict:
+    if not secrets_file.exists():
+        raise FileNotFoundError(
+            f"Secrets file not found: {secrets_file}. "
+            f"Create it from {secrets_file}.example and add your SSH credentials."
+        )
+    secrets = {}
+    for line in secrets_file.read_text().splitlines():
+        line = line.strip()
+        if not line or line.startswith('#'):
+            continue
+        if '=' not in line:
+            continue
+        key, value = line.split('=', 1)
+        secrets[key.strip()] = value.strip().strip('"').strip("'")
+    return secrets
+
 
 def split_and_export_dataset_0and1(filepath: str, chunk_size = 1):
     new_file_path = filepath.split(".csv")[0]
@@ -195,9 +215,14 @@ def SCPGet_nf_dump(date: str, time1: str = None, time2: str = None):
     for s in date.split('/'):
         date_no_slashes += s
     try:
+        secrets = read_secrets()
+        ssh_username = secrets.get('SCP_USERNAME', 'root')
+        ssh_password = secrets['SCP_PASSWORD']
+        ssh_host = secrets.get('SCP_HOST', '192.168.2.1')
+
         with SSHClient() as ssh:
             ssh.load_system_host_keys()
-            ssh.connect('192.168.2.1', username='root', password='rootoot')
+            ssh.connect(ssh_host, username=ssh_username, password=ssh_password)
 
             cmd = NFDUMP + r" -R /var/log/" 
             cmd += date
